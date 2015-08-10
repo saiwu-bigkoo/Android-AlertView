@@ -24,6 +24,7 @@ import java.util.List;
 /**
  * Created by Sai on 15/8/9.
  * 精仿iOSAlertViewController控件
+ * 点击取消按钮返回 －1，其他按钮从0开始算
  */
 public class AlertView {
     public static enum Style{
