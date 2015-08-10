@@ -70,9 +70,8 @@ public class MainActivity extends Activity implements OnItemClickListener, OnDis
     }
 
     public void alertShow6(View view) {
-        new AlertView("标题", "内容", "取消", new String[]{"高亮按钮1", "高亮按钮2", "高亮按钮3"},
-                new String[]{"其他按钮1", "其他按钮2", "其他按钮3", "其他按钮4", "其他按钮5", "其他按钮6",
-                        "其他按钮7", "其他按钮8", "其他按钮9", "其他按钮10", "其他按钮11", "其他按钮12"},
+        new AlertView("上传头像", null, "取消", null,
+                new String[]{"拍照", "从相册中选择"},
                 this, AlertView.Style.ActionSheet, this).show();
     }
 
@@ -111,15 +110,15 @@ public class MainActivity extends Activity implements OnItemClickListener, OnDis
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
-        if (keyCode == KeyEvent.KEYCODE_BACK )
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0)
         {
-            if(mAlertView.isShowing()){
+            if(mAlertView!=null && mAlertView.isShowing()){
                 mAlertView.dismiss();
                 return false;
             }
         }
 
-        return onKeyDown(keyCode, event);
+        return super.onKeyDown(keyCode, event);
 
     }
 }
