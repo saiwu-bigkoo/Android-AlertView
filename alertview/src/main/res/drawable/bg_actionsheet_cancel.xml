@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--点击效果-->
+    <item android:state_pressed="true">
+        <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+            <!-- android:radius 弧形的半径 -->
+            <solid android:color="@color/bgColor_alert_button_press"/>
+            <corners android:radius="@dimen/radius_alertview"/>
+        </shape>
+    </item>
+    <item>
+        <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+            <!-- android:radius 弧形的半径 -->
+            <solid android:color="@color/bgColor_actionsheet_cancel_nor"/>
+            <corners android:radius="@dimen/radius_alertview"/>
+        </shape>
+    </item>
+</selector>

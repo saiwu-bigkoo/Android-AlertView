@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <View
+        android:layout_width="match_parent"
+        android:background="@color/bgColor_divier"
+        android:layout_height="@dimen/size_divier"/>
+    <TextView
+        android:id="@+id/tvAlert"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_alert_button"
+        android:gravity="center"
+        android:textColor="@color/textColor_alert_button_others"
+        android:textSize="@dimen/textSize_alert_button" />
+</LinearLayout>

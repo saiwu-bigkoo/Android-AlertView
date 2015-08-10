@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <!-- android:radius 弧形的半径 -->
+    <solid android:color="@color/bgColor_alertview_alert"/>
+    <corners android:radius="@dimen/radius_alertview"/>
+</shape>
