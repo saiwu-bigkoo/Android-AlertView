@@ -16,11 +16,13 @@ new AlertView("上传头像", null, "取消", null,
                 new String[]{"拍照", "从相册中选择"},
                 this, AlertView.Style.ActionSheet, new OnItemClickListener(){
                     public void onItemClick(Object o,int position){
-                        Toast.makeText(this, "点击了第" + position + "个", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "点击了第" + position + "个", 
+                        Toast.LENGTH_SHORT).show();
                     }
                 }).show();
 ```
 ```java
-new AlertView("标题", "内容", null, new String[]{"确定"}, null, this, AlertView.Style.Alert, null).show();
+new AlertView("标题", "内容", null, new String[]{"确定"}, null, this, 
+                AlertView.Style.Alert, null).show();
 ```
 另外还支持窗口界面拓展，更多操作请下载Demo看。
