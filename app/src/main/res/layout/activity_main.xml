@@ -18,6 +18,10 @@
         android:layout_marginTop="5dp"
         android:layout_height="50dp"
         android:onClick="alertShow3"/>
+    <Button android:text="hey,alert no title !!!click here~~~" android:layout_width="match_parent"
+        android:layout_marginTop="5dp"
+        android:layout_height="50dp"
+        android:onClick="alertShow7"/>
     <Button android:text="hey,actionsheet !!!click here~~~" android:layout_width="match_parent"
         android:layout_marginTop="5dp"
         android:layout_height="50dp"
