@@ -2,11 +2,10 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <gradient
-        android:angle="90"
+        android:type="radial"
+        android:gradientRadius="360"
         android:endColor="@color/bgColor_alertview_alert"
-        android:startColor="@color/bgColor_alertview_alert" />
-
-    <solid android:color="@color/bgColor_alertview_alert" />
+        android:startColor="@color/bgColor_alertview_alert_start" />
 
     <corners android:radius="@dimen/radius_alertview"/>
 

@@ -4,6 +4,7 @@
     <color name="bgColor_overlay">#60000000</color>
     <!--窗口背景颜色-->
     <color name="bgColor_alertview_alert">#f8f8f8</color>
+    <color name="bgColor_alertview_alert_start">#f0f0f0</color>
     <!--标题颜色-->
     <color name="textColor_alert_title">#000000</color>
     <color name="textColor_actionsheet_title">#8f8f8f</color>
