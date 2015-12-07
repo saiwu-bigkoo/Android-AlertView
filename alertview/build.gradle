@@ -35,7 +35,7 @@ install {
     repositories.mavenInstaller {
         // This generates POM.xml with proper parameters
         pom {
-            project {
+            project{
                 packaging 'aar'
                 name 'AlertView For Android'                                   // #CONFIG# // project title
                 url siteUrl
