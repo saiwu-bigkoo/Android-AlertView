@@ -65,15 +65,38 @@ public class AlertView {
     private Animation inAnim;
     private int gravity = Gravity.CENTER;
 
+    //标题和消息
+    private TextView tvAlertTitle;
+    private TextView tvAlertMsg;
+
+    public AlertView(Context context){
+        this.context = context;
+    }
+
+    public AlertView(Context context,String title, String msg){
+        this.context = context;
+        this.title = title;
+        this.msg = msg;
+    }
+
+    /**
+     *
+     * @param title 标题
+     * @param msg 消息内容
+     * @param cancel 取消按钮文本
+     * @param destructive 确定(高亮)按钮组
+     * @param others 其他（普通）按钮组
+     * @param context Context
+     * @param style 样式
+     * @param onItemClickListener 点击按钮回调
+     */
     public AlertView(String title, String msg, String cancel, String[] destructive, String[] others, Context context, Style style,OnItemClickListener onItemClickListener){
         this.context = context;
-        if(style != null)this.style = style;
-        this.onItemClickListener = onItemClickListener;
+        setStyle(style);
+        setOnItemClickListener(onItemClickListener);
 
         initData(title, msg, cancel, destructive, others);
-        initViews();
-        init();
-        initEvents();
+        builder();
     }
 
     /**
@@ -83,22 +106,12 @@ public class AlertView {
 
         this.title = title;
         this.msg = msg;
-        if (destructive != null){
-            this.mDestructive = Arrays.asList(destructive);
-            this.mDatas.addAll(mDestructive);
-        }
-        if (others != null){
-            this.mOthers = Arrays.asList(others);
-            this.mDatas.addAll(mOthers);
-        }
-        if (cancel != null){
-            this.cancel = cancel;
-            if(style == Style.Alert && mDatas.size() < HORIZONTAL_BUTTONS_MAXCOUNT){
-                this.mDatas.add(0,cancel);
-            }
-        }
+        setDestructive(destructive);
+        setOthers(others);
+        setCancelText(cancel);
 
     }
+    private boolean mInitView = false;
     protected void initViews(){
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         decorView = (ViewGroup) ((Activity)context).getWindow().getDecorView().findViewById(android.R.id.content);
@@ -126,23 +139,18 @@ public class AlertView {
                 initAlertViews(layoutInflater);
                 break;
         }
+        mInitView = true;
     }
+
     protected void initHeaderView(ViewGroup viewGroup){
         loAlertHeader = (ViewGroup) viewGroup.findViewById(R.id.loAlertHeader);
-        //标题和消息
-        TextView tvAlertTitle = (TextView) viewGroup.findViewById(R.id.tvAlertTitle);
-        TextView tvAlertMsg = (TextView) viewGroup.findViewById(R.id.tvAlertMsg);
-        if(title != null) {
-            tvAlertTitle.setText(title);
-        }else{
-            tvAlertTitle.setVisibility(View.GONE);
-        }
-        if(msg != null) {
-            tvAlertMsg.setText(msg);
-        }else{
-            tvAlertMsg.setVisibility(View.GONE);
-        }
+
+        tvAlertTitle = (TextView) viewGroup.findViewById(R.id.tvAlertTitle);
+        tvAlertMsg = (TextView) viewGroup.findViewById(R.id.tvAlertMsg);
+        setTitle();
+        setMessage();
     }
+
     protected void initListView(){
         ListView alertButtonListView = (ListView) contentContainer.findViewById(R.id.alertButtonListView);
         //把cancel作为footerView
@@ -162,7 +170,8 @@ public class AlertView {
         alertButtonListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                if(onItemClickListener != null)onItemClickListener.onItemClick(AlertView.this,position);
+                if (onItemClickListener != null)
+                    onItemClickListener.onItemClick(AlertView.this, position);
                 dismiss();
             }
         });
@@ -263,6 +272,9 @@ public class AlertView {
      * 添加这个View到Activity的根视图
      */
     public void show() {
+        if(!mBuilder){
+            builder();
+        }
         if (isShowing()) {
             return;
         }
@@ -335,7 +347,9 @@ public class AlertView {
         }
         @Override
         public void onClick(View view) {
-            if(onItemClickListener != null)onItemClickListener.onItemClick(AlertView.this,position);
+            //任何时候都关闭对话框
+            if(onItemClickListener != null)
+                onItemClickListener.onItemClick(AlertView.this,position);
             dismiss();
         }
     }
@@ -371,4 +385,109 @@ public class AlertView {
             return false;
         }
     };
+
+    private AlertView setTitle(){
+        if(tvAlertTitle != null){
+            if(this.title != null) {
+                tvAlertTitle.setText(this.title);
+                tvAlertTitle.setVisibility(View.VISIBLE);
+            }else{
+                tvAlertTitle.setVisibility(View.GONE);
+            }
+        }
+
+        return this;
+    }
+
+    /**
+     * 设置标题
+     * @param title 为null则隐藏
+     * @return
+     */
+    public AlertView setTitle(String title){
+        this.title = title;
+       return setTitle();
+    }
+
+    private AlertView setMessage() {
+        if(tvAlertMsg != null) {
+            if(msg != null) {
+                tvAlertMsg.setText(msg);
+                tvAlertMsg.setVisibility(View.VISIBLE);
+            }else{
+                tvAlertMsg.setVisibility(View.GONE);
+            }
+        }
+        return this;
+    }
+
+    /**
+     * 设置消息内容
+     * @param msg 为null则隐藏
+     * @return
+     */
+    public AlertView setMessage(String msg) {
+        this.msg = msg;
+        return setMessage();
+    }
+
+    public AlertView  setStyle(Style style){
+        if(style != null)
+            this.style = style;
+        return this;
+    }
+    public AlertView  setOnItemClickListener(OnItemClickListener onItemClickListener){
+        if(onItemClickListener != null)
+            this.onItemClickListener = onItemClickListener;
+        return this;
+    }
+
+    public AlertView  setCancelText(String cancel){
+        if (cancel != null){
+            this.cancel = cancel;
+            if(style == Style.Alert && mDatas.size() < HORIZONTAL_BUTTONS_MAXCOUNT){
+                this.mDatas.add(0,cancel);
+            }
+        }
+        return this;
+    }
+
+    /**
+     * 此处设置高亮按钮
+     * @param destructive
+     * @return
+     */
+    public AlertView  setDestructive(String... destructive){
+        if (destructive != null){
+            this.mDestructive = Arrays.asList(destructive);
+            this.mDatas.addAll(mDestructive);
+        }
+        return this;
+    }
+
+    /**
+     * 此处设置普通按钮
+     * @param others
+     * @return
+     */
+    public AlertView  setOthers(String... others){
+        if (others != null){
+            this.mOthers = Arrays.asList(others);
+            this.mDatas.addAll(mOthers);
+        }
+        return this;
+    }
+
+    private boolean mBuilder =  false;
+
+    public AlertView builder(){
+        if(!mInitView){
+            initViews();
+        }
+        init();
+        initEvents();
+
+        mBuilder = true;
+        return this;
+    }
 }
