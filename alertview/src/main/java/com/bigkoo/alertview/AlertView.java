@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,7 +28,7 @@ import java.util.List;
  * 点击取消按钮返回 －1，其他按钮从0开始算
  */
 public class AlertView {
-    public static enum Style{
+    public enum Style{
         ActionSheet,
         Alert
     }
@@ -35,11 +36,6 @@ public class AlertView {
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM
     );
     public static final int HORIZONTAL_BUTTONS_MAXCOUNT = 2;
-    public static final String OTHERS = "others";
-    public static final String DESTRUCTIVE = "destructive";
-    public static final String CANCEL = "cancel";
-    public static final String TITLE = "title";
-    public static final String MSG = "msg";
     public static final int CANCELPOSITION = -1;//点击取消按钮返回 －1，其他按钮从0开始算
 
     private String title;
@@ -51,7 +47,7 @@ public class AlertView {
     private String cancel;
     private ArrayList<String> mDatas = new ArrayList<String>();
 
-    private Context context;
+    private WeakReference<Context> contextWeak;
     private ViewGroup contentContainer;
     private ViewGroup decorView;//activity的根View
     private ViewGroup rootView;//AlertView 的 根View
@@ -61,14 +57,14 @@ public class AlertView {
 
     private OnDismissListener onDismissListener;
     private OnItemClickListener onItemClickListener;
-    private boolean isDismissing;
+    private boolean isShowing;
 
     private Animation outAnim;
     private Animation inAnim;
     private int gravity = Gravity.CENTER;
 
     public AlertView(Builder builder) {
-        this.context = builder.context;
+        this.contextWeak = new WeakReference<>(builder.context);
         this.style = builder.style;
         this.title = builder.title;
         this.msg = builder.msg;
@@ -84,7 +80,7 @@ public class AlertView {
     }
 
     public AlertView(String title, String msg, String cancel, String[] destructive, String[] others, Context context, Style style,OnItemClickListener onItemClickListener){
-        this.context = context;
+        this.contextWeak = new WeakReference<>(context);
         if(style != null)this.style = style;
         this.onItemClickListener = onItemClickListener;
 
@@ -118,6 +114,8 @@ public class AlertView {
 
     }
     protected void initViews(){
+        Context context = contextWeak.get();
+        if(context == null) return;
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         decorView = (ViewGroup) ((Activity)context).getWindow().getDecorView().findViewById(android.R.id.content);
         rootView = (ViewGroup) layoutInflater.inflate(R.layout.layout_alertview, decorView, false);
@@ -162,6 +160,9 @@ public class AlertView {
         }
     }
     protected void initListView(){
+        Context context = contextWeak.get();
+        if(context == null) return;
+
         ListView alertButtonListView = (ListView) contentContainer.findViewById(R.id.alertButtonListView);
         //把cancel作为footerView
         if(cancel != null && style == Style.Alert){
@@ -198,6 +199,8 @@ public class AlertView {
         tvAlertCancel.setOnClickListener(new OnTextClickListener(CANCELPOSITION));
     }
     protected void initAlertViews(LayoutInflater layoutInflater) {
+        Context context = contextWeak.get();
+        if(context == null) return;
 
         ViewGroup viewGroup = (ViewGroup) layoutInflater.inflate(R.layout.layout_alertview_alert, contentContainer);
         initHeaderView(viewGroup);
@@ -274,6 +277,7 @@ public class AlertView {
      * @param view 这个View
      */
     private void onAttached(View view) {
+        isShowing = true;
         decorView.addView(view);
         contentContainer.startAnimation(inAnim);
     }
@@ -292,50 +296,36 @@ public class AlertView {
      * @return 如果视图已经存在该View返回true
      */
     public boolean isShowing() {
-        View view = decorView.findViewById(R.id.outmost_container);
-        return view != null;
+        return rootView.getParent() != null && isShowing;
     }
+
     public void dismiss() {
-        if (isDismissing) {
-            return;
+        //消失动画
+        outAnim.setAnimationListener(outAnimListener);
+        contentContainer.startAnimation(outAnim);
+    }
+
+    public void dismissImmediately() {
+        decorView.removeView(rootView);
+        isShowing = false;
+        if(onDismissListener != null){
+            onDismissListener.onDismiss(this);
         }
 
-        //消失动画
-        outAnim.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                decorView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        //从activity根视图移除
-                        decorView.removeView(rootView);
-                        isDismissing = false;
-                        if (onDismissListener != null) {
-                            onDismissListener.onDismiss(AlertView.this);
-                        }
-                    }
-                });
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-        contentContainer.startAnimation(outAnim);
-        isDismissing = true;
     }
+
     public Animation getInAnimation() {
+        Context context = contextWeak.get();
+        if(context == null) return null;
+
         int res = AlertAnimateUtil.getAnimationResource(this.gravity, true);
         return AnimationUtils.loadAnimation(context, res);
     }
 
     public Animation getOutAnimation() {
+        Context context = contextWeak.get();
+        if(context == null) return null;
+
         int res = AlertAnimateUtil.getAnimationResource(this.gravity, false);
         return AnimationUtils.loadAnimation(context, res);
     }
@@ -357,11 +347,30 @@ public class AlertView {
             dismiss();
         }
     }
+    private Animation.AnimationListener outAnimListener = new Animation.AnimationListener() {
+        @Override
+        public void onAnimationStart(Animation animation) {
+
+        }
+
+        @Override
+        public void onAnimationEnd(Animation animation) {
+            dismissImmediately();
+        }
+
+        @Override
+        public void onAnimationRepeat(Animation animation) {
+
+        }
+    };
 
     /**
      * 主要用于拓展View的时候有输入框，键盘弹出则设置MarginBottom往上顶，避免输入法挡住界面
      */
     public void setMarginBottom(int marginBottom){
+        Context context = contextWeak.get();
+        if(context == null) return;
+
         int margin_alert_left_right = context.getResources().getDimensionPixelSize(R.dimen.margin_alert_left_right);
         params.setMargins(margin_alert_left_right,0,margin_alert_left_right,marginBottom);
         contentContainer.setLayoutParams(params);
@@ -430,7 +439,7 @@ public class AlertView {
             return this;
         }
 
-        public Builder setDestructive(String[] destructive) {
+        public Builder setDestructive(String... destructive) {
             this.destructive = destructive;
             return this;
         }
