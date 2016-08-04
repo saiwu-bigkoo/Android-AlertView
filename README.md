@@ -9,7 +9,7 @@
 
 demo是用Module方式依赖，你也可以使用gradle 依赖:
 ```java
-   compile 'com.bigkoo:alertview:1.0.2'
+   compile 'com.bigkoo:alertview:1.0.3'
 ```
 
 ### config in java code
@@ -22,6 +22,18 @@ new AlertView("上传头像", null, "取消", null,
                         Toast.LENGTH_SHORT).show();
                     }
                 }).show();
+                
+//或者builder模式创建
+new AlertView.Builder().setContext(context)
+                .setStyle(AlertView.Style.ActionSheet)
+                .setTitle("选择操作")
+                .setMessage(null)
+                .setCancelText("取消")
+                .setDestructive("拍照", "从相册中选择")
+                .setOthers(null)
+                .setOnItemClickListener(listener)
+                .build()
+                .show();
 ```
 ```java
 new AlertView("标题", "内容", null, new String[]{"确定"}, null, this, 
