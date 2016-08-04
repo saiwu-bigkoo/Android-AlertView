@@ -2,6 +2,7 @@ package com.bigkoo.alertview;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -150,16 +151,29 @@ public class AlertView {
         //标题和消息
         TextView tvAlertTitle = (TextView) viewGroup.findViewById(R.id.tvAlertTitle);
         TextView tvAlertMsg = (TextView) viewGroup.findViewById(R.id.tvAlertMsg);
+
+        //获取msg部分的bottom margin
+        int dimenMsgBottomMargin = 0;
+
         if(title != null) {
             tvAlertTitle.setText(title);
         }else{
             tvAlertTitle.setVisibility(View.GONE);
+            try {
+                //标题不可见时顶部增加padding与底部margin相同保证消息垂直居中
+                dimenMsgBottomMargin = context.getResources().getDimensionPixelSize(R.dimen.marginBottom_alert_msg);
+            }
+            catch (Resources.NotFoundException e) {
+                dimenMsgBottomMargin = 0;
+            }
         }
         if(msg != null) {
             tvAlertMsg.setText(msg);
         }else{
             tvAlertMsg.setVisibility(View.GONE);
         }
+
+        tvAlertMsg.setPadding(0, dimenMsgBottomMargin, 0, 0);
     }
     protected void initListView(){
         ListView alertButtonListView = (ListView) contentContainer.findViewById(R.id.alertButtonListView);
