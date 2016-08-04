@@ -44,6 +44,8 @@ public class AlertView {
 
     private String title;
     private String msg;
+    private String[] destructive;
+    private String[] others;
     private List<String> mDestructive;
     private List<String> mOthers;
     private String cancel;
@@ -64,6 +66,22 @@ public class AlertView {
     private Animation outAnim;
     private Animation inAnim;
     private int gravity = Gravity.CENTER;
+
+    public AlertView(Builder builder) {
+        this.context = builder.context;
+        this.style = builder.style;
+        this.title = builder.title;
+        this.msg = builder.msg;
+        this.cancel = builder.cancel;
+        this.destructive = builder.destructive;
+        this.others = builder.others;
+        this.onItemClickListener = builder.onItemClickListener;
+
+        initData(title, msg, cancel, destructive, others);
+        initViews();
+        init();
+        initEvents();
+    }
 
     public AlertView(String title, String msg, String cancel, String[] destructive, String[] others, Context context, Style style,OnItemClickListener onItemClickListener){
         this.context = context;
@@ -371,4 +389,64 @@ public class AlertView {
             return false;
         }
     };
+
+    /**
+     * Builder for arguments
+     */
+    public static class Builder {
+        private Context context;
+        private Style style;
+        private String title;
+        private String msg;
+        private String cancel;
+        private String[] destructive;
+        private String[] others;
+        private OnItemClickListener onItemClickListener;
+
+        public Builder setContext(Context context) {
+            this.context = context;
+            return this;
+        }
+
+        public Builder setStyle(Style style) {
+            if(style != null) {
+                this.style = style;
+            }
+            return this;
+        }
+
+        public Builder setTitle(String title) {
+            this.title = title;
+            return this;
+        }
+
+        public Builder setMessage(String msg) {
+            this.msg = msg;
+            return this;
+        }
+
+        public Builder setCancelText(String cancel) {
+            this.cancel = cancel;
+            return this;
+        }
+
+        public Builder setDestructive(String[] destructive) {
+            this.destructive = destructive;
+            return this;
+        }
+
+        public Builder setOthers(String[] others) {
+            this.others = others;
+            return this;
+        }
+
+        public Builder setOnItemClickListener(OnItemClickListener onItemClickListener) {
+            this.onItemClickListener = onItemClickListener;
+            return this;
+        }
+
+        public AlertView build() {
+            return new AlertView(this);
+        }
+    }
 }
