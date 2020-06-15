@@ -40,3 +40,4 @@ new AlertView("标题", "内容", null, new String[]{"确定"}, null, this,
                 AlertView.Style.Alert, null).show();
 ```
 另外还支持窗口界面拓展，更多操作请下载Demo看。
+lixiaoming1980
